@@ -301,7 +301,7 @@ void machine_kexec(struct kimage *kimage)
 	 */
 	__flush_icache_range((uintptr_t)reboot_code_buffer,
 			     (uintptr_t)reboot_code_buffer +
-			     kexec_relocate_code_size);
+			     arm64_relocate_new_kernel_size);
 
 	/* Flush the kimage list and its buffers. */
 	kexec_list_flush(kimage);
