@@ -11,6 +11,8 @@
 #include <asm/clocksource.h>
 #include <uapi/linux/time.h>
 
+#include <asm/vdso/clocksource.h>
+
 #define __VDSO_USE_SYSCALL		ULLONG_MAX
 
 #define VDSO_HAS_CLOCK_GETRES		1
@@ -86,10 +88,10 @@ static __always_inline u64 __arch_get_hw_counter(s32 clock_mode)
 	u64 res;
 
 	/*
-	 * clock_mode == VCLOCK_NONE implies that vDSO are disabled so
+	 * clock_mode != NONE implies that vDSO are enabled otherwise
 	 * fallback on syscall.
 	 */
-	if (clock_mode == VCLOCK_NONE)
+	if (clock_mode == VDSO_CLOCKMODE_NONE)
 		return __VDSO_USE_SYSCALL;
 
 #ifdef CONFIG_HYPERV_TIMER
