@@ -25,6 +25,8 @@
 #define ClearPageFsCache(page)		ClearPagePrivate2((page))
 #define TestSetPageFsCache(page)	TestSetPagePrivate2((page))
 #define TestClearPageFsCache(page)	TestClearPagePrivate2((page))
+#define wait_on_page_fscache(page)	wait_on_page_private_2((page))
+#define unlock_page_fscache(page)	unlock_page_private_2((page))
 
 /**
  * unlock_page_fscache - Unlock a page that's locked with PG_fscache
