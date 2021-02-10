@@ -118,7 +118,7 @@ int afs_write_begin(struct file *file, struct address_space *mapping,
 	}
 
 #ifdef CONFIG_AFS_FSCACHE
-	wait_on_page_fscache(page);
+	wait_on_page_private_2(page);
 #endif
 
 	index = page->index;
@@ -929,8 +929,8 @@ vm_fault_t afs_page_mkwrite(struct vm_fault *vmf)
 	 * be modified.  We then assume the entire page will need writing back.
 	 */
 #ifdef CONFIG_AFS_FSCACHE
-	if (PageFsCache(page) &&
-	    wait_on_page_bit_killable(page, PG_fscache) < 0)
+	if (PagePrivate2(page) &&
+	    wait_on_page_bit_killable(page, PG_private_2) < 0)
 		return VM_FAULT_RETRY;
 #endif
 
@@ -1026,6 +1026,6 @@ int afs_launder_page(struct page *page)
 
 	trace_afs_page_dirty(vnode, tracepoint_string("laundered"), page);
 	detach_page_private(page);
-	wait_on_page_fscache(page);
+	wait_on_page_private_2(page);
 	return ret;
 }

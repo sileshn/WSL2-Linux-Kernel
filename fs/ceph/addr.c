@@ -147,7 +147,7 @@ static void ceph_invalidatepage(struct page *page, unsigned int offset,
 	struct ceph_inode_info *ci;
 	struct ceph_snap_context *snapc = page_snap_context(page);
 
-	wait_on_page_fscache(page);
+	wait_on_page_private_2(page);
 
 	inode = page->mapping->host;
 	ci = ceph_inode(inode);
@@ -176,10 +176,10 @@ static int ceph_releasepage(struct page *page, gfp_t gfp_flags)
 	dout("%p releasepage %p idx %lu (%sdirty)\n", page->mapping->host,
 	     page, page->index, PageDirty(page) ? "" : "not ");
 
-	if (PageFsCache(page)) {
+	if (PagePrivate2(page)) {
 		if (!(gfp_flags & __GFP_DIRECT_RECLAIM) || !(gfp_flags & __GFP_FS))
 			return 0;
-		wait_on_page_fscache(page);
+		wait_on_page_private_2(page);
 	}
 	return !PagePrivate(page);
 }
@@ -1258,7 +1258,7 @@ static int ceph_write_begin(struct file *file, struct address_space *mapping,
 			      &ceph_netfs_write_begin_ops, NULL);
 out:
 	if (r == 0)
-		wait_on_page_fscache(page);
+		wait_on_page_private_2(page);
 	if (r < 0) {
 		if (page)
 			put_page(page);

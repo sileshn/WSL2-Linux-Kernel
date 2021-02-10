@@ -3771,7 +3771,7 @@ EXPORT_SYMBOL(generic_file_write_iter);
  * The address_space is to try to release any data against the page
  * (presumably at page->private).
  *
- * This may also be called if PG_fscache is set on a page, indicating that the
+ * This may also be called if PG_private_2 is set on a page, indicating that the
  * page is known to the local caching routines.
  *
  * The @gfp_mask argument specifies whether I/O may be performed to release
