@@ -84,7 +84,8 @@ static int efivarfs_create(struct user_namespace *mnt_userns, struct inode *dir,
 	/* length of the variable name itself: remove GUID and separator */
 	namelen = dentry->d_name.len - EFI_VARIABLE_GUID_LEN - 1;
 
-	err = guid_parse(dentry->d_name.name + namelen + 1, &var->var.VendorGuid);
+	err = guid_parse(dentry->d_name.name + namelen + 1,
+			 (guid_t *)&var->var.VendorGuid);
 	if (err)
 		goto out;
 

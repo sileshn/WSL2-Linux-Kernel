@@ -63,17 +63,22 @@ typedef void *efi_handle_t;
  * is 32 bits not 8 bits like our guid_t. In some cases (i.e., on 32-bit ARM),
  * this means that firmware services invoked by the kernel may assume that
  * efi_guid_t* arguments are 32-bit aligned, and use memory accessors that
- * do not tolerate misalignment. So let's set the minimum alignment to 32 bits.
+ * do not tolerate misalignment.
  *
  * Note that the UEFI spec as well as some comments in the EDK2 code base
  * suggest that EFI_GUID should be 64-bit aligned, but this appears to be
  * a mistake, given that no code seems to exist that actually enforces that
  * or relies on it.
  */
-typedef guid_t efi_guid_t __aligned(__alignof__(u32));
+typedef struct {
+	__le32	a;
+	__le16	b;
+	__le16	c;
+	u8	d[8];
+} efi_guid_t;
 
 #define EFI_GUID(a,b,c,d0,d1,d2,d3,d4,d5,d6,d7) \
-	GUID_INIT(a, b, c, d0, d1, d2, d3, d4, d5, d6, d7)
+	(efi_guid_t){ a, b, c, { d0,d1,d2,d3,d4,d5,d6,d7 }}
 
 /*
  * Generic EFI table header
@@ -598,8 +603,8 @@ efi_guidcmp (efi_guid_t left, efi_guid_t right)
 static inline char *
 efi_guid_to_str(efi_guid_t *guid, char *out)
 {
-	sprintf(out, "%pUl", guid->b);
-        return out;
+	sprintf(out, "%pUl", guid);
+	return out;
 }
 
 extern void efi_init (void);
