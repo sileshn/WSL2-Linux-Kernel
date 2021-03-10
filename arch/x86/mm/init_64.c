@@ -832,7 +832,7 @@ void __init paging_init(void)
 #define PAGE_UNUSED 0xFD
 
 /* Returns true if the PMD is completely unused and thus it can be freed */
-static bool __meminit vmemmap_pmd_is_unused(unsigned long addr, unsigned long end)
+static bool __maybe_unused __meminit vmemmap_pmd_is_unused(unsigned long addr, unsigned long end)
 {
 	unsigned long start = ALIGN_DOWN(addr, PMD_SIZE);
 
