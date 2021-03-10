@@ -627,7 +627,10 @@ static void blk_mq_complete_send_ipi(struct request *rq)
 	list = &per_cpu(blk_cpu_done, cpu);
 	if (llist_add(&rq->ipi_list, list)) {
 		INIT_CSD(&rq->csd, __blk_mq_complete_request_remote, rq);
+		__diag_push();
+		__diag_ignore(clang, 13, "-Walign-mismatch", "There is no issue with misalignment here");
 		smp_call_function_single_async(cpu, &rq->csd);
+		__diag_pop();
 	}
 }
 
