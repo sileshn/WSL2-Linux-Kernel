@@ -2950,63 +2950,6 @@ exit_sg(void)
 	idr_destroy(&sg_index_idr);
 }
 
-static struct bio *
-sg_mk_kern_bio(int bvec_cnt)
-{
-	struct bio *biop;
-
-	if (bvec_cnt > BIO_MAX_PAGES)
-		return NULL;
-	biop = bio_alloc(GFP_ATOMIC, bvec_cnt);
-	if (!biop)
-		return NULL;
-	biop->bi_end_io = bio_put;
-	return biop;
-}
-
-/*
- * Setup to move data between kernel buffers managed by this driver and a SCSI device. Note that
- * there is no corresponding 'unmap' call as is required by blk_rq_map_user() . Uses a single
- * bio with an expanded appended bvec if necessary.
- */
-static int
-sg_rq_map_kern(struct sg_request *srp, struct request_queue *q, struct request *rqq, int rw_ind)
-{
-	struct sg_scatter_hold *schp = &srp->sgat_h;
-	struct bio *bio;
-	int k, ln;
-	int op_flags = 0;
-	int num_sgat = schp->num_sgat;
-	int dlen = schp->dlen;
-	int pg_sz = 1 << (PAGE_SHIFT + schp->page_order);
-	int num_segs = (1 << schp->page_order) * num_sgat;
-	int res = 0;
-
-	SG_LOG(4, srp->parentfp, "%s: dlen=%d, pg_sz=%d\n", __func__, dlen, pg_sz);
-	if (num_sgat <= 0)
-		return 0;
-	if (rw_ind == WRITE)
-		op_flags = REQ_SYNC | REQ_IDLE;
-	bio = sg_mk_kern_bio(num_sgat - k);
-	if (!bio)
-		return -ENOMEM;
-	bio->bi_opf = req_op(rqq) | op_flags;
-
-	for (k = 0; k < num_sgat && dlen > 0; ++k, dlen -= ln) {
-		ln = min_t(int, dlen, pg_sz);
-		if (bio_add_pc_page(q, bio, schp->pages[k], ln, 0) < ln) {
-			bio_put(bio);
-			return -EINVAL;
-		}
-	}
-	res = blk_rq_append_bio(rqq, &bio);
-	if (unlikely(res))
-		bio_put(bio);
-	else
-		rqq->nr_phys_segments = num_segs;
-	return res;
-}
-
 static inline void
 sg_set_map_data(const struct sg_scatter_hold *schp, bool up_valid,
 		struct rq_map_data *mdp)
@@ -3172,8 +3115,6 @@ sg_start_req(struct sg_request *srp, struct sg_comm_wr_t *cwrp, int dxfer_dir)
 		if (IS_ENABLED(CONFIG_SCSI_PROC_FS) && res)
 			SG_LOG(1, sfp, "%s: blk_rq_map_user() res=%d\n",
 			       __func__, res);
-	} else {	/* transfer data to/from kernel buffers */
-		res = sg_rq_map_kern(srp, q, rq, r0w);
 	}
 fini:
 	if (unlikely(res)) {		/* failure, free up resources */
