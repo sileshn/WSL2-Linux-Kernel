@@ -47,6 +47,8 @@ DH_OPTIONS = -p$(package)
 # dpkg-deb >= 1.21.10 supports the DPKG_DEB_COMPRESSOR_TYPE environment
 # variable, which provides the same functionality as KDEB_COMPRESS. The
 # KDEB_COMPRESS variable will be removed in the future.
+KDEB_COMPRESS="xz"
+DPKG_DEB_COMPRESSOR_TYPE="xz"
 define binary
 	$(Q)dh_testdir $(DH_OPTIONS)
 	$(Q)dh_testroot $(DH_OPTIONS)
