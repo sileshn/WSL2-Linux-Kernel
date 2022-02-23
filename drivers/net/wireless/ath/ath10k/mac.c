@@ -3747,6 +3747,8 @@ ath10k_mac_tx_h_get_txmode(struct ath10k *ar,
 	if (IEEE80211_SKB_CB(skb)->flags & IEEE80211_TX_CTL_HW_80211_ENCAP)
 		return ATH10K_HW_TXRX_ETHERNET;
 
+	skb_orphan(skb);
+
 	if (!vif || vif->type == NL80211_IFTYPE_MONITOR)
 		return ATH10K_HW_TXRX_RAW;
 
