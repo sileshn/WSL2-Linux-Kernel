@@ -64,7 +64,7 @@ scm_version()
 			fi
 
 			# Add -g and exactly 12 hex chars.
-			printf '%s%s' -g "$(echo $head | cut -c1-12)"
+			printf '%s%s'
 		fi
 
 		# Check for uncommitted changes.
@@ -81,7 +81,7 @@ scm_version()
 			git --no-optional-locks status -uno --porcelain 2>/dev/null ||
 			git diff-index --name-only HEAD
 		} | read dummy; then
-			printf '%s' -dirty
+			printf '%s'
 		fi
 	fi
 }
@@ -139,7 +139,6 @@ elif [ "${LOCALVERSION+set}" != "set" ]; then
 	# If the variable LOCALVERSION is set (including being set
 	# to an empty string), we don't want to append a plus sign.
 	scm=$(scm_version --short)
-	res="$res${scm:++}"
 fi
 
 echo "$res"
