@@ -92,7 +92,6 @@ scm_version()
 		# If only the short version is requested, don't bother
 		# running further git commands
 		if $short; then
-			echo "+"
 			return
 		fi
 		# If we are past the tagged commit, we pretty print it.
@@ -102,7 +101,7 @@ scm_version()
 		fi
 
 		# Add -g and exactly 12 hex chars.
-		printf '%s%s' -g "$(echo $head | cut -c1-12)"
+		printf '%s%s'
 	fi
 
 	if ${no_dirty}; then
@@ -123,7 +122,7 @@ scm_version()
 		git --no-optional-locks status -uno --porcelain 2>/dev/null ||
 		git diff-index --name-only HEAD
 	} | read dummy; then
-		printf '%s' -dirty
+		printf '%s'
 	fi
 }
 
