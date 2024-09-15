@@ -33,6 +33,7 @@ EXPORT_SYMBOL_GPL(sysctl_long_vals);
 #if defined(CONFIG_SYSCTL)
 
 /* Constants used for minimum and maximum */
+extern int sysctl_sched_yield_type;
 static const int ngroups_max = NGROUPS_MAX;
 static const int cap_last_cap = CAP_LAST_CAP;
 
