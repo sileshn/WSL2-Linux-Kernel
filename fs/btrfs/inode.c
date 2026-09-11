@@ -7170,8 +7170,8 @@ struct extent_map *btrfs_get_extent(struct btrfs_inode *inode,
 	 * point the commit_root has everything we need.
 	 */
 	if (btrfs_is_free_space_inode(inode)) {
-		path->search_commit_root = 1;
-		path->skip_locking = 1;
+		path->search_commit_root = true;
+		path->skip_locking = true;
 	}
 
 	ret = btrfs_lookup_file_extent(NULL, root, path, objectid, start, 0);
@@ -10037,6 +10037,7 @@ out_folios:
 	}
 	kvfree(folios);
 out:
+	extent_changeset_free(data_reserved);
 	if (ret >= 0)
 		iocb->ki_pos += encoded->len;
 	return ret;

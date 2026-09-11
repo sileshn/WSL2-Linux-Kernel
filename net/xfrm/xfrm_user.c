@@ -916,7 +916,7 @@ static struct xfrm_state *xfrm_state_construct(struct net *net,
 	if ((err = attach_auth_trunc(&x->aalg, &x->props.aalgo,
 				     attrs[XFRMA_ALG_AUTH_TRUNC], extack)))
 		goto error;
-	if (!x->props.aalgo) {
+	if (!x->aalg) {
 		if ((err = attach_auth(&x->aalg, &x->props.aalgo,
 				       attrs[XFRMA_ALG_AUTH], extack)))
 			goto error;
@@ -2068,12 +2068,11 @@ static int validate_tmpl(int nr, struct xfrm_user_tmpl *ut, u16 family,
 		switch (ut[i].mode) {
 		case XFRM_MODE_TUNNEL:
 		case XFRM_MODE_BEET:
+		case XFRM_MODE_IPTFS:
 			if (ut[i].optional && dir == XFRM_POLICY_OUT) {
 				NL_SET_ERR_MSG(extack, "Mode in optional template not allowed in outbound policy");
 				return -EINVAL;
 			}
-			break;
-		case XFRM_MODE_IPTFS:
 			break;
 		default:
 			if (ut[i].family != prev_family) {
