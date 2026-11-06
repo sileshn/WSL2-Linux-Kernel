@@ -29,7 +29,7 @@
 #include "hyperv_net.h"
 #include "netvsc_trace.h"
 
-static struct workqueue_struct *netvsc_wq;
+static struct workqueue_struct *netvsc_wq __maybe_unused;
 
 static int netvsc_wait_for_nvsp_response(struct hv_device *device,
 					 struct netvsc_device *net_device)
